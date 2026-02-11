@@ -20,12 +20,18 @@ const THEME = {
 
 export default function CurrentlyReadingScreen() {
   const router = useRouter();
-  const { books, loading, loadBooks } = useBookStore();
+  const { books, loading, loadBooks, refreshBooks } = useBookStore();
 
+  // Initial load
+  useEffect(() => {
+    loadBooks();
+  }, []);
+
+  // Refresh when returning to screen
   useFocusEffect(
     useCallback(() => {
-      loadBooks();
-    }, [loadBooks])
+      refreshBooks();
+    }, []) // Empty dependency array ensures this doesn't loop, but runs on focus
   );
 
   const renderBook = ({ item }: { item: Book }) => (

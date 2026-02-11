@@ -9,6 +9,7 @@ interface BookStore {
   books: Book[];
   loading: boolean;
   loadBooks: () => Promise<void>;
+  refreshBooks: () => Promise<void>;
   addBook: (data: {
     title: string;
     author: string | null;
@@ -44,6 +45,16 @@ export const useBookStore = create<BookStore>((set) => ({
     } catch (error) {
       console.error('[BookStore] Failed to load books:', error);
       set({ loading: false });
+    }
+  },
+
+  refreshBooks: async () => {
+    try {
+      const books = await BookRepository.getAll();
+      set({ books });
+      console.log('[BookStore] Refreshed', books.length, 'books');
+    } catch (error) {
+      console.error('[BookStore] Failed to refresh books:', error);
     }
   },
 

@@ -35,15 +35,13 @@ export class BookRepository {
       createdAt,
     };
 
-    if (Platform.OS === 'web') {
-      console.log('[BookRepository] Web: Simulating create book:', book.title);
-      return Promise.resolve(book);
-    }
+    // Web simulation removed to test actual persistence
 
     return new Promise((resolve, reject) => {
       db.transaction(
         (tx: SQLTransaction) => {
           // 1. Create Book
+          console.log('[BookRepository] Inserting book:', id, data.title);
           tx.executeSql(
             'INSERT INTO books (id, title, author, page_count, genre, created_at) VALUES (?, ?, ?, ?, ?, ?)',
             [id, data.title, data.author, data.pageCount, data.genre, createdAt],
@@ -54,6 +52,7 @@ export class BookRepository {
                 [instanceId, id, startedAt, 'in_progress', null, 0],
                 () => {
                   console.log('[BookRepository] Created book + instance:', book.title);
+                  console.log('[BookRepository] Last inserted ID:', id);
                   resolve(book);
                 },
                 (_, error: unknown) => {
@@ -79,11 +78,6 @@ export class BookRepository {
   }
 
   static async getById(id: string): Promise<Book | null> {
-    if (Platform.OS === 'web') {
-      console.log('[BookRepository] Web: Simulating getById:', id);
-      return Promise.resolve(null);
-    }
-
     return new Promise((resolve, reject) => {
       db.transaction(
         (tx: SQLTransaction) => {
@@ -124,10 +118,7 @@ export class BookRepository {
   }
 
   static async getAll(): Promise<Book[]> {
-    if (Platform.OS === 'web') {
-      console.log('[BookRepository] Web: Simulating getAll');
-      return Promise.resolve([]);
-    }
+    // Web simulation removed to test actual persistence
 
     return new Promise((resolve, reject) => {
       db.transaction(
@@ -136,6 +127,8 @@ export class BookRepository {
             'SELECT * FROM books ORDER BY created_at DESC',
             [],
             (_: any, { rows }: any) => {
+              console.log('[BookRepository] getAll rows returned:', rows.length);
+              console.log('[BookRepository] getAll raw results:', rows);
               const books: Book[] = [];
               for (let i = 0; i < rows.length; i++) {
                 const row = rows.item(i);

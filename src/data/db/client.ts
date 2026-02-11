@@ -8,23 +8,16 @@ import {
   CREATE_CHALLENGES_TABLE,
 } from './schema';
 
-const isWeb = Platform.OS === 'web';
-
-const db = !isWeb ? SQLite.openDatabase('reading_coach.db') : {
-  transaction: () => { },
-  readTransaction: () => { },
-} as any;
+// Expo SQLite automatically uses a shim for web (WebSQL or IndexedDB based on version)
+// We simply open the database without platform checks
+const db = SQLite.openDatabase('reading_coach.db');
 
 export const initDatabase = (): Promise<void> => {
-  if (isWeb) {
-    console.log('[DB] Skipping database initialization on web');
-    return Promise.resolve();
-  }
 
   return new Promise((resolve, reject) => {
     db.transaction(
       (tx: any) => {
-        console.log('[DB] Initializing database...');
+        console.log('[DB] Transaction started - Initializing database...');
 
         // Create books table
         tx.executeSql(CREATE_BOOKS_TABLE, [], () => {
