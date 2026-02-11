@@ -7,7 +7,7 @@ import { GenrePicker } from '../../src/components/GenrePicker';
 
 export default function AddBookScreen() {
   const router = useRouter();
-  const addBook = useBookStore((state) => state.addBook);
+  const { addBook, refreshBooks } = useBookStore();
 
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
@@ -71,7 +71,10 @@ export default function AddBookScreen() {
         genre,
       });
 
-      console.log('[AddBook] Book added successfully');
+      // Explicitly refresh to ensure homepage has latest data before nav
+      await refreshBooks();
+
+      console.log('[AddBook] Book added and list refreshed');
       router.back();
     } catch (error) {
       console.error('[AddBook] Failed to add book:', error);
