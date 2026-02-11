@@ -23,7 +23,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.readingcoach.app"
+      "package": "com.prakhar.readingbehaviorcoach"
     },
     "web": {
       "bundler": "metro"
